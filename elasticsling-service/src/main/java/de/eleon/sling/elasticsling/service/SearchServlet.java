@@ -10,7 +10,7 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-@SlingServlet(paths = {"/search"})
+@SlingServlet(paths = {"/tsearch"})
 public class SearchServlet extends SlingAllMethodsServlet {
 
     @Reference
@@ -23,7 +23,7 @@ public class SearchServlet extends SlingAllMethodsServlet {
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write("Hello world!\n");
-        //response.getWriter().write(searchService.test());
+        response.getWriter().write(this.getClass().getName() + "\n");
+        response.getWriter().write(searchService.test());
     }
 }

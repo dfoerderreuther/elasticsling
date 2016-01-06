@@ -12,7 +12,7 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-@SlingServlet(paths = {"/esearch"})
+@SlingServlet(paths = {"/search"})
 public class SlingSearchServlet extends SlingSafeMethodsServlet {
 
     @Reference
@@ -25,7 +25,11 @@ public class SlingSearchServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write("HHHello world!\n");
-        response.getWriter().write(searchService.test());
+        response.getWriter().write(this.getClass().getName() + "\n");
+        response.getWriter().write(searchService.test() + "\n");
+        response.getWriter().write("result: " + "\n");
+        for (String result : searchService.find("search")) {
+            response.getWriter().write("\t" + result  + "\n");
+        }
     }
 }
