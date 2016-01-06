@@ -1,19 +1,17 @@
-package de.eleon.sling.elasticsling.client.impl;
+package de.eleon.sling.elasticsling.service;
 
-import de.eleon.sling.elasticsling.service.SearchService;
-import de.eleon.sling.elasticsling.service.impl.SearchServiceImpl;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-@SlingServlet(paths = {"/esearch"})
-public class SlingSearchServlet extends SlingSafeMethodsServlet {
+@SlingServlet(paths = {"/search"})
+public class SearchServlet extends SlingAllMethodsServlet {
 
     @Reference
     SearchService searchService;
@@ -25,7 +23,7 @@ public class SlingSearchServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write("HHHello world!\n");
-        response.getWriter().write(searchService.test());
+        response.getWriter().write("Hello world!\n");
+        //response.getWriter().write(searchService.test());
     }
 }
