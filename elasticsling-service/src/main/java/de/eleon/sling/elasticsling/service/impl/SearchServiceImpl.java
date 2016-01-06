@@ -1,20 +1,24 @@
 package de.eleon.sling.elasticsling.service.impl;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import de.eleon.sling.elasticsling.service.SearchService;
 import org.apache.felix.scr.annotations.*;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Component(metatype = true, label = "elasticsearch service", description = "elasticsearch service")
 @Service(SearchService.class)
@@ -24,7 +28,7 @@ public class SearchServiceImpl implements SearchService {
 
     private int port;
 
-    private String indexName = "felix";
+    private String indexName = "sling";
 
     @Property(value = "localhost", label = "Host", description = "Elasticsearch Hostname")
     private static final String HOST_NAME = "host.name";
@@ -55,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Deactivate
-    protected void deatcivate() {
+    protected void deactivate() {
         this.client.close();
         System.out.println("closed");
     }
@@ -68,6 +72,19 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public void write(String path, String text) {
         System.out.println("Write to index: path = [" + path + "], text = [" + text + "]");
+        try {
+            final IndexResponse indexResponse = client.prepareIndex(indexName, "doc")
+                    .setSource(ImmutableMap.<String, String>builder()
+                            .put("path", path)
+                            .put("text", text)
+                            .build())
+                    .execute().get();
+            System.out.print("created element with id: " + indexResponse.getId());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -97,6 +114,7 @@ public class SearchServiceImpl implements SearchService {
                 .actionGet()
                 .isAcknowledged();
     }
+
 
 
 }

@@ -2,20 +2,16 @@ package de.eleon.sling.elasticsling.index.impl;
 
 import de.eleon.sling.elasticsling.service.SearchService;
 import org.apache.felix.scr.annotations.*;
+import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.*;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-import org.apache.sling.api.SlingConstants;
-
-import java.util.Map;
-
-@Component(immediate=true, metatype=false)
+@Component(immediate = true, metatype = false)
 @Service(EventHandler.class)
-@Property(name = EventConstants.EVENT_TOPIC, value = { SlingConstants.TOPIC_RESOURCE_ADDED })
+@Property(name = EventConstants.EVENT_TOPIC, value = {SlingConstants.TOPIC_RESOURCE_ADDED})
 public class ResourceIndexer implements EventHandler {
 
     @Reference
@@ -53,7 +49,7 @@ public class ResourceIndexer implements EventHandler {
     private void index(String path) {
         Resource res = resourceResolver.getResource(path);
         final ValueMap valueMap = res.getValueMap();
-        String text = valueMap.containsKey("text") ? (String)valueMap.get("text") : "";
+        String text = valueMap.containsKey("text") ? (String) valueMap.get("text") : "";
         searchService.write(path, text);
     }
 

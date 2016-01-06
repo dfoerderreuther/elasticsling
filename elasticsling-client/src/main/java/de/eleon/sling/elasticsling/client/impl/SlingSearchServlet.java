@@ -7,6 +7,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 
 import javax.servlet.ServletException;
@@ -25,6 +26,7 @@ public class SlingSearchServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
+        final RequestParameter search = request.getRequestParameter("search");
         response.getWriter().write(this.getClass().getName() + "\n");
         response.getWriter().write(searchService.test() + "\n");
         response.getWriter().write("result: " + "\n");
