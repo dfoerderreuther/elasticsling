@@ -3,6 +3,10 @@ package de.eleon.sling.elasticsling.service.impl;
 import com.google.common.collect.ImmutableList;
 import de.eleon.sling.elasticsling.service.SearchService;
 import org.apache.felix.scr.annotations.*;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
+import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -20,6 +24,8 @@ public class SearchServiceImpl implements SearchService {
 
     private int port;
 
+    private String indexName = "felix";
+
     @Property(value = "localhost", label = "Host", description = "Elasticsearch Hostname")
     private static final String HOST_NAME = "host.name";
 
@@ -36,6 +42,12 @@ public class SearchServiceImpl implements SearchService {
         try {
             client = TransportClient.builder().build()
                     .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), port));
+            if (!indexExist()) {
+                createIndex();
+                System.out.println("index " + indexName + " created");
+            } else {
+                System.out.println("index " + indexName + " already exists");
+            }
             System.out.println("connected");
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -70,5 +82,21 @@ public class SearchServiceImpl implements SearchService {
         if (!props.containsKey(name) || props.get(name) == null) return def;
         return (T) props.get(name);
     }
+
+
+    private boolean indexExist() {
+        return client.admin().indices()
+                .exists(new IndicesExistsRequest(indexName))
+                .actionGet()
+                .isExists();
+    }
+
+    private boolean createIndex() {
+        return client.admin().indices()
+                .create(new CreateIndexRequest(indexName))
+                .actionGet()
+                .isAcknowledged();
+    }
+
 
 }
