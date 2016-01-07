@@ -12,6 +12,7 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @SlingServlet(paths = {"/search"})
 public class SlingSearchServlet extends SlingSafeMethodsServlet {
@@ -26,12 +27,32 @@ public class SlingSearchServlet extends SlingSafeMethodsServlet {
 
     @Override
     protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+
         final RequestParameter search = request.getRequestParameter("search");
-        response.getWriter().write(this.getClass().getName() + "\n");
-        response.getWriter().write(searchService.test() + "\n");
-        response.getWriter().write("result: " + "\n");
-        for (String result : searchService.find("search")) {
-            response.getWriter().write("\t" + result  + "\n");
+
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Search</title>");
+        out.println("</head>");
+        out.println("<body>");
+        out.println("<h1>Search</h1>");
+
+        if (search == null) {
+            out.println("<a href=\"/search?search=sling\">Search for \"sling\"</a>");
+        } else {
+            out.println("<h2>Results for \"" + search.getString() + "\"</h2>");
+            out.println("<ul>");
+            for (String result : searchService.find(search.getString())) {
+                out.println("<li>");
+                out.println(result);
+                out.println("</li>");
+            }
+            out.println("</ul>");
         }
+
+        out.println("</body>");
+        out.println("</html>");
     }
 }
