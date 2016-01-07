@@ -45,9 +45,9 @@ public class SlingSearchServlet extends SlingSafeMethodsServlet {
             out.println("<h2>Results for \"" + search.getString() + "\"</h2>");
             out.println("<ul>");
             for (String result : searchService.find(search.getString())) {
-                out.println("<li>");
+                out.println("<li><a href=\"" + result + ".html\">");
                 out.println(result);
-                out.println("</li>");
+                out.println("</a></li>");
             }
             out.println("</ul>");
         }
