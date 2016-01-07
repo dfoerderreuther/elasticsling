@@ -1,0 +1,6 @@
+<html>
+  <body>
+    <h1><%= currentNode.title %></h1>
+    <pre><%= currentNode.text %></pre>
+  </body>
+</html>
