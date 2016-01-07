@@ -1,7 +1,10 @@
 package de.eleon.sling.elasticsling.service.impl;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import de.eleon.sling.elasticsling.service.SearchService;
 import org.apache.felix.scr.annotations.*;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -9,10 +12,14 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.admin.indices.exists.types.TypesExistsRequest;
 import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -89,10 +96,27 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public List<String> find(String search) {
-        return ImmutableList.<String>builder()
-                .add("/find/path/a")
-                .add("/find/path/b")
-                .build();
+
+        SearchResponse response = client.prepareSearch(indexName)
+                .setTypes("doc")
+                .setSearchType(SearchType.QUERY_AND_FETCH)
+                .setQuery(QueryBuilders.fuzzyQuery("text", search))
+                .addField("path")
+                .setFrom(0)
+                .setSize(60)
+                .setExplain(true)
+                .execute()
+                .actionGet();
+
+        SearchHit[] results = response.getHits().getHits();
+        return FluentIterable
+                .from(Lists.newArrayList(results))
+                .transform(new Function<SearchHit, String>() {
+                    @Override
+                    public String apply(SearchHit searchHitFields) {
+                        return searchHitFields.<String>field("path").value();
+                    }
+                }).toList();
     }
 
     private <T> T get(final Map<String, Object> props, Object name, T def) {

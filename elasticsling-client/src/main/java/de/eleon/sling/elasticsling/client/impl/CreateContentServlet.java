@@ -34,7 +34,7 @@ public class CreateContentServlet extends SlingSafeMethodsServlet {
         out.println("<form method=\"POST\" action=\"/content/\" enctype=\"multipart/form-data\">\n" +
                 "resourceType: <input type=\"text\" name=\"sling:resourceType\" value=\"foo/bar\" /><br />\n" +
                 "title: <input type=\"text\" name=\"title\" value=\"\" /><br />\n" +
-                "text: <input type=\"text\" name=\"text\" value=\"\" /><br />\n" +
+                "text: <textarea  name=\"text\" rows=\"4\" cols=\"30\" /></textarea><br />\n" +
                 "<input type=\"submit\" value=\"submit\" />\n" +
                 "</form>");
         out.println("</body>");
